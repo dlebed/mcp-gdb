@@ -141,6 +141,28 @@ class GdbServer {
           }
         },
         {
+          name: 'gdb_connect_remote',
+          description: 'Connect to a remote GDB server',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              sessionId: {
+                type: 'string',
+                description: 'GDB session ID'
+              },
+              host: {
+                type: 'string',
+                description: 'Hostname or IP address of the remote GDB server'
+              },
+              port: {
+                type: 'number',
+                description: 'Port number of the remote GDB server'
+              }
+            },
+            required: ['sessionId', 'host', 'port']
+          }
+        },
+        {
           name: 'gdb_attach',
           description: 'Attach to a running process',
           inputSchema: {
@@ -366,6 +388,8 @@ class GdbServer {
           return await this.handleGdbTerminate(request.params.arguments);
         case 'gdb_list_sessions':
           return await this.handleGdbListSessions();
+        case 'gdb_connect_remote':
+          return await this.handleGdbConnectRemote(request.params.arguments);
         case 'gdb_attach':
           return await this.handleGdbAttach(request.params.arguments);
         case 'gdb_load_core':
@@ -654,6 +678,49 @@ class GdbServer {
         }
       ]
     };
+  }
+
+  private async handleGdbConnectRemote(args: any) {
+    const { sessionId, host, port } = args;
+
+    if (!activeSessions.has(sessionId)) {
+      return {
+        content: [
+          {
+            type: 'text',
+            text: `No active GDB session with ID: ${sessionId}`
+          }
+        ],
+        isError: true
+      };
+    }
+
+    const session = activeSessions.get(sessionId)!;
+
+    try {
+      const command = `target extended-remote ${host}:${port}`;
+      const output = await this.executeGdbCommand(session, command);
+
+      return {
+        content: [
+          {
+            type: 'text',
+            text: `Connected to remote target at ${host}:${port}\n\nOutput:\n${output}`
+          }
+        ]
+      };
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      return {
+        content: [
+          {
+            type: 'text',
+            text: `Failed to connect to remote target: ${errorMessage}`
+          }
+        ],
+        isError: true
+      };
+    }
   }
 
   private async handleGdbAttach(args: any) {
