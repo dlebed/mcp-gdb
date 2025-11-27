@@ -291,3 +291,45 @@ Then load the program and core dump:
 ```
 
 Then you can analyze the crash just as if you had caught it in real-time.
+
+## Debugging Remote Targets
+
+You can also use the MCP GDB server to debug applications running on remote targets (e.g., embedded devices or remote servers) using GDB's remote debugging capability.
+
+### 1. Start a GDB Session
+
+First, start a GDB session as usual:
+
+```
+<use_mcp_tool>
+<server_name>gdb</server_name>
+<tool_name>gdb_start</tool_name>
+<arguments>
+{}
+</arguments>
+</use_mcp_tool>
+```
+
+### 2. Connect to the Remote Target
+
+Use the `gdb_connect_remote` tool to connect to the remote GDB server (gdbserver):
+
+```
+<use_mcp_tool>
+<server_name>gdb</server_name>
+<tool_name>gdb_connect_remote</tool_name>
+<arguments>
+{
+  "sessionId": "1616161616161",
+  "host": "localhost",
+  "port": 1234
+}
+</arguments>
+</use_mcp_tool>
+```
+
+This effectively runs `target extended-remote localhost:1234`.
+
+### 3. Debug as Usual
+
+Once connected, you can use other tools like `gdb_load`, `gdb_set_breakpoint`, `gdb_continue`, etc., to debug the remote application. Note that depending on the remote target setup, you might need to use `gdb_load` to transfer the executable to the target or just load symbols locally.

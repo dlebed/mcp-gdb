@@ -60,6 +60,11 @@ Use gdb_start to start a new debugging session
 Use gdb_load to load /path/to/my/program with the sessionId that was returned from gdb_start
 ```
 
+#### Connecting to a remote GDB server
+```
+Use gdb_connect_remote to connect to a remote GDB server (e.g., localhost:1234) with the sessionId
+```
+
 #### Setting a breakpoint
 ```
 Use gdb_set_breakpoint to set a breakpoint at main in the active GDB session
@@ -89,6 +94,7 @@ Use gdb_terminate to end the debugging session
 
 - `gdb_start`: Start a new GDB session
 - `gdb_load`: Load a program into GDB
+- `gdb_connect_remote`: Connect to a remote GDB server
 - `gdb_command`: Execute an arbitrary GDB command
 - `gdb_terminate`: Terminate a GDB session
 - `gdb_list_sessions`: List all active GDB sessions
